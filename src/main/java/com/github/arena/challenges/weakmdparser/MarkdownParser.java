@@ -2,7 +2,7 @@ package com.github.arena.challenges.weakmdparser;
 
 public class MarkdownParser {
 
-    String parse(String markdown) {
+    public String parse(String markdown) {
         String[] lines = markdown.split("\n");
         String result = "";
         boolean activeList = false;
@@ -39,7 +39,7 @@ public class MarkdownParser {
         return result;
     }
 
-    protected String ph(String markdown) {
+    private String ph(String markdown) {
         int count = 0;
 
         for (int i = 0; i < markdown.length() && markdown.charAt(i) == '#'; i++) {
@@ -50,10 +50,10 @@ public class MarkdownParser {
             return null;
         }
 
-        return "<h" + Integer.toString(count) + ">" + markdown.substring(count + 1) + "</h" + Integer.toString(count) + ">";
+        return "<h" + count + ">" + markdown.substring(count + 1) + "</h" + count + ">";
     }
 
-    public String li(String markdown) {
+    private String li(String markdown) {
         if (markdown.startsWith("*")) {
             String skipAsterisk = markdown.substring(2);
             String listItemString = parseSomeSymbols(skipAsterisk);
@@ -63,11 +63,11 @@ public class MarkdownParser {
         return null;
     }
 
-    public String p(String markdown) {
+    private String p(String markdown) {
         return "<p>" + parseSomeSymbols(markdown) + "</p>";
     }
 
-    public String parseSomeSymbols(String markdown) {
+    private String parseSomeSymbols(String markdown) {
 
         String lookingFor = "__(.+)__";
         String update = "<strong>$1</strong>";
