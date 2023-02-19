@@ -56,7 +56,7 @@ public class MarkdownParser {
     private String parseListItem(String markdown) {
         if (markdown.startsWith("*")) {
             String skipAsterisk = markdown.substring(2);
-            String listItemString = parseSomeSymbols(skipAsterisk);
+            String listItemString = parseContent(skipAsterisk);
             return "<li>" + listItemString + "</li>";
         }
 
@@ -64,17 +64,23 @@ public class MarkdownParser {
     }
 
     private String parseParagraph(String markdown) {
-        return "<p>" + parseSomeSymbols(markdown) + "</p>";
+        return "<p>" + parseContent(markdown) + "</p>";
     }
 
-    private String parseSomeSymbols(String markdown) {
+    private String parseContent(String markdown) {
+        String parsedBold = parseBold(markdown);
+        return parseItalic(parsedBold);
+    }
 
+    private String parseBold(String markdown) {
         String lookingFor = "__(.+)__";
         String update = "<strong>$1</strong>";
-        String workingOn = markdown.replaceAll(lookingFor, update);
+        return markdown.replaceAll(lookingFor, update);
+    }
 
-        lookingFor = "_(.+)_";
-        update = "<em>$1</em>";
-        return workingOn.replaceAll(lookingFor, update);
+    private String parseItalic(String markdown) {
+        String lookingFor = "_(.+)_";
+        String update = "<em>$1</em>";
+        return markdown.replaceAll(lookingFor, update);
     }
 }
