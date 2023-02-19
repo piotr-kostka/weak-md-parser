@@ -4,39 +4,39 @@ public class MarkdownParser {
 
     public String parse(String markdown) {
         String[] lines = markdown.split("\n");
-        String result = "";
+        StringBuilder result = new StringBuilder();
         boolean activeList = false;
 
-        for (int i = 0; i < lines.length; i++) {
+        for (String line : lines) {
 
-            String theLine = parseHeader(lines[i]);
+            String theLine = parseHeader(line);
 
             if (theLine == null) {
-                theLine = parseListItem(lines[i]);
+                theLine = parseListItem(line);
             }
 
             if (theLine == null) {
-                theLine = parseParagraph(lines[i]);
+                theLine = parseParagraph(line);
             }
 
             if (theLine.matches("(<li>).*") && !theLine.matches("(<h).*") && !theLine.matches("(<p>).*") && !activeList) {
                 activeList = true;
-                result = result + "<ul>";
-                result = result + theLine;
+                result.append("<ul>");
+                result.append(theLine);
             } else if (!theLine.matches("(<li>).*") && activeList) {
                 activeList = false;
-                result = result + "</ul>";
-                result = result + theLine;
+                result.append("</ul>");
+                result.append(theLine);
             } else {
-                result = result + theLine;
+                result.append(theLine);
             }
         }
 
         if (activeList) {
-            result = result + "</ul>";
+            result.append("</ul>");
         }
 
-        return result;
+        return result.toString();
     }
 
     private String parseHeader(String markdown) {
