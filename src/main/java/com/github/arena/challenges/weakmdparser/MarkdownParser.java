@@ -1,43 +1,40 @@
 package com.github.arena.challenges.weakmdparser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MarkdownParser {
+    ContentParser contentParser = new ContentParser();
+    StringBuilder result = new StringBuilder();
+    List<String> itemsList = new ArrayList<>();
 
     public String parse(String markdown) {
         String[] lines = markdown.split("\n");
-        StringBuilder result = new StringBuilder();
-        boolean activeList = false;
-
-        ContentParser contentParser = new ContentParser();
+        int counter = 0;
 
         for (String line : lines) {
+            counter++;
 
-            String theLine = contentParser.parseHeader(line);
-
-            if (theLine == null) {
-                theLine = contentParser.parseListItem(line);
+            if (line.startsWith("#")) {
+                result.append(contentParser.parseHeader(line));
+                continue;
             }
 
-            if (theLine == null) {
-                theLine = contentParser.parseParagraph(line);
+            if (line.startsWith("*")) {
+                itemsList.add(line);
+                if (counter == lines.length) {
+                    result.append(contentParser.parseList(itemsList));
+                }
+                continue;
             }
 
-            if (theLine.matches("(<li>).*") && !theLine.matches("(<h).*") && !theLine.matches("(<p>).*") && !activeList) {
-                activeList = true;
-                result.append("<ul>");
-                result.append(theLine);
-            } else if (!theLine.matches("(<li>).*") && activeList) {
-                activeList = false;
-                result.append("</ul>");
-                result.append(theLine);
-            } else {
-                result.append(theLine);
+            if (!itemsList.isEmpty()) {
+                result.append(contentParser.parseList(itemsList));
             }
+
+            result.append(contentParser.parseParagraph(line));
         }
 
-        if (activeList) {
-            result.append("</ul>");
-        }
-
-        return result.toString();
+        return contentParser.parseSymbols(result.toString());
     }
 }

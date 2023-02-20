@@ -1,10 +1,33 @@
 package com.github.arena.challenges.weakmdparser;
 
+import java.util.List;
+
 public class ContentParser {
 
-    private String parseSymbols(String markdown) {
-        String parsedBold = parseBold(markdown);
-        return parseItalic(parsedBold);
+    protected String parseHeader(String markdown) {
+        int count = 0;
+
+        for (int i = 0; i < markdown.length() && markdown.charAt(i) == '#'; i++) {
+            count++;
+        }
+
+        return "<h" + count + ">" + markdown.substring(count + 1) + "</h" + count + ">";
+    }
+
+    protected String parseListItem(String markdown) {
+        return "<li>" + markdown.substring(2) + "</li>";
+    }
+
+    protected String parseList(List<String> itemsList) {
+        StringBuilder result = new StringBuilder();
+        for (String item : itemsList) {
+            result.append(parseListItem(item));
+        }
+        return "<ul>" + result + "</ul>";
+    }
+
+    protected String parseParagraph(String markdown) {
+        return "<p>" + markdown + "</p>";
     }
 
     private String parseBold(String markdown) {
@@ -19,31 +42,8 @@ public class ContentParser {
         return markdown.replaceAll(lookingFor, update);
     }
 
-    protected String parseHeader(String markdown) {
-        int count = 0;
-
-        for (int i = 0; i < markdown.length() && markdown.charAt(i) == '#'; i++) {
-            count++;
-        }
-
-        if (count == 0) {
-            return null;
-        }
-
-        return "<h" + count + ">" + markdown.substring(count + 1) + "</h" + count + ">";
-    }
-
-    protected String parseListItem(String markdown) {
-        if (markdown.startsWith("*")) {
-            String skipAsterisk = markdown.substring(2);
-            String listItemString = parseSymbols(skipAsterisk);
-            return "<li>" + listItemString + "</li>";
-        }
-
-        return null;
-    }
-
-    protected String parseParagraph(String markdown) {
-        return "<p>" + parseSymbols(markdown) + "</p>";
+    protected String parseSymbols(String markdown) {
+        String parsedBold = parseBold(markdown);
+        return parseItalic(parsedBold);
     }
 }
